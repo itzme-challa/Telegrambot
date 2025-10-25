@@ -1,17 +1,17 @@
 // src/text/greeting.ts
-import { Context } from 'telegraf';
-import createDebug from 'debug';
-import axios from 'axios';
+const { Context } = require('telegraf');
+const createDebug = require('debug');
+const axios = require('axios');
 
 const debug = createDebug('bot:greeting_text');
 const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_URL || '';
 
-const replyToMessage = (ctx: Context, messageId: number, string: string) =>
+const replyToMessage = (ctx, messageId, string) =>
   ctx.reply(string, {
     reply_parameters: { message_id: messageId },
   });
 
-const greeting = () => async (ctx: Context) => {
+const greeting = () => async (ctx) => {
   debug('Triggered "greeting" command');
 
   const messageId = ctx.message?.message_id;
@@ -30,7 +30,7 @@ const greeting = () => async (ctx: Context) => {
   }
 };
 
-const search = () => async (ctx: Context) => {
+const search = () => async (ctx) => {
   debug('Triggered "search" command');
 
   const messageId = ctx.message?.message_id;
@@ -53,7 +53,7 @@ const search = () => async (ctx: Context) => {
   }
 };
 
-const stop = () => async (ctx: Context) => {
+const stop = () => async (ctx) => {
   debug('Triggered "stop" command');
 
   const messageId = ctx.message?.message_id;
@@ -74,7 +74,7 @@ const stop = () => async (ctx: Context) => {
   }
 };
 
-const link = () => async (ctx: Context) => {
+const link = () => async (ctx) => {
   debug('Triggered "link" command');
 
   const messageId = ctx.message?.message_id;
@@ -97,7 +97,7 @@ const link = () => async (ctx: Context) => {
   }
 };
 
-const share = () => async (ctx: Context) => {
+const share = () => async (ctx) => {
   debug('Triggered "share" command');
 
   const messageId = ctx.message?.message_id;
@@ -122,4 +122,4 @@ const share = () => async (ctx: Context) => {
   }
 };
 
-export { greeting, search, stop, link, share };
+module.exports = { greeting, search, stop, link, share };
