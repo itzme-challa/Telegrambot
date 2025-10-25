@@ -1,14 +1,14 @@
 // src/index.ts
-import { Telegraf } from 'telegraf';
-import { about } from './commands';
-import { greeting, search, stop, link, share } from './text';
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { development, production } from './core';
-import axios from 'axios';
+const { Telegraf } = require('telegraf');
+const { about } = require('./commands');
+const { greeting, search, stop, link, share } = require('./text');
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const { development, production } = require('./core');
+const axios = require('axios');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const ENVIRONMENT = process.env.NODE_ENV || '';
-const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_URL || ''; // Add Web App URL to Vercel environment variables
+const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_URL || '';
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -43,7 +43,7 @@ bot.on('text', async (ctx) => {
 });
 
 // Vercel production mode
-export const startVercel = async (req: VercelRequest, res: VercelResponse) => {
+exports.startVercel = async (req, res) => {
   await production(req, res, bot);
 };
 
