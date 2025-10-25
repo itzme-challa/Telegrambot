@@ -1,13 +1,14 @@
+// src/index.ts
 import { Telegraf } from 'telegraf';
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { development, production } from './core';
 import { about } from './commands';
 import { greeting, search, stop, link, share } from './text';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { development, production } from './core';
 import axios from 'axios';
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const ENVIRONMENT = process.env.NODE_ENV || '';
-const GOOGLE_SHEET_API = process.env.GOOGLE_SHEET_API || ''; // Add to Vercel env variables
+const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_URL || ''; // Add Web App URL to Vercel environment variables
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -19,38 +20,25 @@ bot.command('stop', stop());
 bot.command('link', link());
 bot.command('share', share());
 
-// Forward messages to partner
-bot.on('message', async (ctx) => {
-  const chatID = ctx.chat.id.toString();
-  const message = ctx.message;
+// Handle text messages for forwarding to partner
+bot.on('text', async (ctx) => {
+  const chatId = ctx.message.chat.id.toString();
+  const text = ctx.message.text;
 
-  // Check if user has a partner
-  const { data } = await axios.post(GOOGLE_SHEET_API, {
-    action: 'getPartnerID',
-    chatID,
-  });
+  // Skip commands
+  if (text.startsWith('/')) return;
 
-  const partnerID = data.partnerID;
-  if (partnerID) {
-    try {
-      // Forward the message to the partner
-      if ('text' in message) {
-        await ctx.telegram.sendMessage(partnerID, message.text);
-      } else if ('photo' in message) {
-        await ctx.telegram.sendPhoto(partnerID, message.photo[message.photo.length - 1].file_id);
-      } else if ('voice' in message) {
-        await ctx.telegram.sendVoice(partnerID, message.voice.file_id);
-      } else if ('video' in message) {
-        await ctx.telegram.sendVideo(partnerID, message.video.file_id);
-      } else {
-        await ctx.reply('Unsupported message type.');
-      }
-    } catch (error) {
-      console.error('Error forwarding message:', error);
-      await ctx.reply('Error sending message to partner.');
+  try {
+    const response = await axios.post(GOOGLE_SHEET_URL, { action: 'getPartner', chatId });
+    const { partnerId } = response.data;
+
+    if (partnerId) {
+      await ctx.telegram.sendMessage(partnerId, text);
+    } else {
+      await ctx.reply('No partner found. Type /search to find a new partner.');
     }
-  } else {
-    await ctx.reply('No partner assigned. Use /search to find a partner.');
+  } catch (error) {
+    await ctx.reply('Error fetching partner. Please try again.');
   }
 });
 
