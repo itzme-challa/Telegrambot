@@ -3,7 +3,8 @@
   "version": "1.1.0",
   "description": "Telegram Bot Vercel Boilerplate",
   "main": "src/index.ts",
-  "author": "Mark Pavlov (https://github.com/sollidy)",
+  "type": "commonjs", // Explicitly set to CommonJS
+  "author": "Mark Pavlov[](https://github.com/sollidy)",
   "homepage": "https://github.com/sollidy/telegram-bot-vercel-boilerplate",
   "dependencies": {
     "@vercel/node": "^5.1.16",
@@ -25,7 +26,7 @@
   "scripts": {
     "dev": "DEBUG=bot* dotenv -- nodemon -e ts -x ts-node src/index.ts",
     "devWindows": "@powershell -Command $env:DEBUG='bot*';dotenv -- -- nodemon -e ts -x ts-node src/index.ts",
-    "build": "ncc build src/index.ts -o public -m",
+    "build": "ncc build src/index.ts -o public -m --no-source-map",
     "prettier": "prettier --write 'src/**/*.ts'",
     "lint": "tsc --noemit"
   }
